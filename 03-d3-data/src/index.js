@@ -70,17 +70,23 @@ Promise.all([
         const bodyD3 = d3.select("body");
         bodyD3.append("div").append("svg");
         const svg = d3.select("svg");
+
         const data = [20, 5, 25, 8, 15];
 
-        svg.selectAll("rect")
-            .data(data)
+        const bars = svg.selectAll("g")
+            .data(usersPosts)
             .enter()
-            .append("rect")
+            .append("g")
+
+        bars.append("rect")
             .attr("x", (d, i) => i * 21)
-            .attr("y", (d) => 30 - d)
+            .attr("y", (d) => 50 - d)
             .attr("width", 20)
-            .attr("height", (d) => d);
+            .attr("height", (d) => 50 - 2 * d.titre_posts.length)
 
-
-        // Étiquette du graphique
+        // Étiquettes bâtons
+        bars.append("text")
+            .attr("x", (d, i) => i * 21)
+            .attr("y", (d, i) => 50)
+            .text((d) => d.titre_posts.length)
     });
