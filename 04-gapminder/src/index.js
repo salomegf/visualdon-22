@@ -1,7 +1,12 @@
 import * as d3 from 'd3'
-import income from '../data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv'
+import incomeString from '../data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv'
 import lifeExpectancy from '../data/life_expectancy_years.csv'
-import population from '../data/population_total_better.csv'
+import populationString from '../data/population_total_better.csv'
+
+import arrayTransformed from './lib/arrayTransformed.js'
+
+const income = arrayTransformed(incomeString);
+const population = arrayTransformed(populationString);
 
 const countries = income.map((d, i) => {
     return d.country;
@@ -32,8 +37,6 @@ countries.forEach(country => {
     y2021.push(country);
     i++;
 });
-console.log(y2021);
-
 
 //Marges
 const margin = {
@@ -42,14 +45,14 @@ const margin = {
         bottom: 20,
         left: 40
     },
-    width = 400 - margin.left - margin.right,
+    width = 600 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
 const svg = d3.select("svg");
 
 //Échelles
 const x = d3.scaleLinear()
-    .domain([0, 100])
+    .domain([0, 100000])
     .range([0, width])
 
 const y = d3.scaleLinear()
@@ -73,15 +76,16 @@ g.append('g')
     .call(d3.axisLeft(y))
 
 //Données
-g.append("circle")
-    .attr("cx", x(10)).attr("cy", y(60)).attr("r", 40).style("fill", "blue");
-
-
-
 g.selectAll("circle")
     .data(y2021)
     .enter()
     .append("circle")
-    .attr("cx", (d) => d.income)
-    .attr("cy", (d) => d.life_expectancy)
-    .attr("r", (d) => d.polulation);
+    .attr("class", (d) => d.country)
+    .attr("cx", (d) => x(d.income))
+    .attr("cy", (d) => y(d.life_expectancy))
+    //.attr("r", 10)
+    .attr("r", (d) => d.population/30000000)
+    //.attr("r", (d) => Math.log(d.population)/2)
+    .style("fill", "orange")
+    .style("stroke", "black")
+    .style("fill-opacity", 0.5);
