@@ -1,4 +1,7 @@
 import * as d3 from 'd3'
+import {
+    scaleSqrt
+} from 'd3'
 import incomeString from '../data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv'
 import lifeExpectancy from '../data/life_expectancy_years.csv'
 import populationString from '../data/population_total_better.csv'
@@ -38,12 +41,15 @@ countries.forEach(country => {
     i++;
 });
 
+console.log(y2021);
+
+
 //Marges
 const margin = {
         top: 20,
-        right: 40,
+        right: 20,
         bottom: 20,
-        left: 40
+        left: 20
     },
     width = 600 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
@@ -56,7 +62,7 @@ const x = d3.scaleLinear()
     .range([0, width])
 
 const y = d3.scaleLinear()
-    .domain([0, 100])
+    .domain([50, 90])
     .range([height, 0])
 
 //SVG + translation
@@ -76,6 +82,11 @@ g.append('g')
     .call(d3.axisLeft(y))
 
 //Données
+const scalePop = scaleSqrt()
+    .domain([0, 1400000000])
+    .range([0, 30])
+
+
 g.selectAll("circle")
     .data(y2021)
     .enter()
@@ -84,8 +95,8 @@ g.selectAll("circle")
     .attr("cx", (d) => x(d.income))
     .attr("cy", (d) => y(d.life_expectancy))
     //.attr("r", 10)
-    .attr("r", (d) => d.population/30000000)
+    .attr("r", (d) => scalePop(d.population))
     //.attr("r", (d) => Math.log(d.population)/2)
     .style("fill", "orange")
-    .style("stroke", "black")
-    .style("fill-opacity", 0.5);
+    .style("stroke", "orange")
+    .style("fill-opacity", 0.3);
