@@ -41,9 +41,6 @@ countries.forEach(country => {
     i++;
 });
 
-console.log(y2021);
-
-
 //Marges
 const margin = {
         top: 20,
@@ -57,7 +54,7 @@ const margin = {
 const svg = d3.select("svg");
 
 //Échelles
-const x = d3.scaleLinear()
+const x = d3.scaleSqrt()
     .domain([0, 100000])
     .range([0, width])
 
@@ -85,7 +82,6 @@ g.append('g')
 const scalePop = scaleSqrt()
     .domain([0, 1400000000])
     .range([0, 30])
-
 
 g.selectAll("circle")
     .data(y2021)
