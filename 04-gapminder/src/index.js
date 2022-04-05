@@ -121,8 +121,8 @@ const g2 = d3.select(".group2");
 // Map and projection
 const path = d3.geoPath();
 const projection = d3.geoMercator()
-    .scale(70)
-    .center([0, 20])
+    .scale(85)
+    .center([0, 45])
     .translate([width / 2, height / 2]);
 
 // Data and color scale
@@ -134,9 +134,6 @@ const colorScale = d3.scaleThreshold()
 // Load external data and boot
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-    /* .defer(d3.csv, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv", function (d) {
-        data.set(d.code, +d.pop);
-    }) */
     .await(ready);
 
 function ready(error, topo) {
