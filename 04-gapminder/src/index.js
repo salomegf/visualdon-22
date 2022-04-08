@@ -5,8 +5,10 @@ import {
 import incomeString from '../data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv'
 import lifeExpectancy from '../data/life_expectancy_years.csv'
 import populationString from '../data/population_total_better.csv'
+import populationString2 from '../data/population_total_better.csv'
 
 import arrayTransformed from './lib/arrayTransformed.js'
+import merge from './lib/merge.js'
 
 const income = arrayTransformed(incomeString);
 const population = arrayTransformed(populationString);
@@ -41,7 +43,7 @@ countries.forEach(country => {
     i++;
 });
 
-console.log(y2021);
+//console.log(y2021);
 
 //Marges
 const margin = {
@@ -99,7 +101,7 @@ g.selectAll("circle")
     .style("fill-opacity", 0.3);
 
 
-
+/* 
 // Cartographie
 const margin2 = {
         top: 5,
@@ -174,7 +176,7 @@ function ready(error, topo) {
         // set the color of each country
         .attr("fill", function (d, i) {
             const country = y2021.filter(y2021 => y2021.country == d.properties.name)
-            
+
             let lifeExp = ''
             if (country[0] === undefined) {
                 lifeExp = 0;
@@ -190,4 +192,143 @@ function ready(error, topo) {
         .style("opacity", .8)
         .on("mouseover", mouseOver)
         .on("mouseleave", mouseLeave)
+} */
+
+
+//Animation
+
+//Tableau des années
+const data = merge(incomeString, populationString2, lifeExpectancy);
+//console.log(data);
+
+const annee2021 = data.filter(data => data.annee == 2021)
+//console.log(annee2021[0].data);
+
+//Echelles
+const x2 = d3.scaleSqrt()
+    .domain([0, 100000])
+    .range([0, width])
+
+const y2 = d3.scaleLinear()
+    .domain([15, 90])
+    .range([height, 0])
+
+const scalePop2 = scaleSqrt()
+    .domain([0, 1400000000])
+    .range([0, 30])
+
+body.append('svg')
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g").attr("class", "group3")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+//Axes
+const g3 = d3.select(".group3");
+
+g3.append('g')
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x2))
+
+g3.append('g')
+    .call(d3.axisLeft(y2))
+
+g3.append('text')
+    .text('')
+    .attr("class", "annee")
+
+
+
+//Données
+/* const annee2021 = allData.filter(allData => allData.annee == 2021)
+console.log(annee2021[0].data);
+
+g3.selectAll("circle")
+    .data(annee2021[0].data)
+    .enter()
+    .append("circle")
+    .attr("class", (d) => d.country)
+    .attr("cx", (d) => x(d.income))
+    .attr("cy", (d) => y(d.life))
+    .attr("r", (d) => scalePop(d.pop))
+    .style("fill", "orange")
+    .style("stroke", "orange")
+    .style("fill-opacity", 0.3); */
+
+//Variable où on stocke l'id de notre intervalle
+let nIntervId;
+
+function animate() {
+    // regarder si l'intervalle a été déjà démarré
+    if (!nIntervId) {
+        nIntervId = setInterval(play, 100);
+    }
 }
+
+let j = 0;
+
+function play() {
+    // Recommencer si à la fin du tableau
+    if (data[j].annee == 2021 /*j == data.length - 1*/ ) {
+        j = 0;
+    } else {
+        j++;
+    }
+    // Mise à jour graphique
+    d3.select('.annee').text(data[j].annee)
+
+    updateChart(data[j].data);
+}
+
+// Mettre en pause
+function stop() {
+    clearInterval(nIntervId);
+    nIntervId = null;
+}
+
+// Fonction de mise à jour du graphique
+function updateChart(data_iteration) {
+    g3.selectAll("circle")
+        .data(data_iteration)
+        .join(enter => enter.append('circle')
+            .attr("class", (d) => d.country)
+            .attr("cx", (d) => x2(d.income))
+            .attr("cy", (d) => y2(d.life))
+            .attr("r", (d) => scalePop2(d.pop))
+            .style("fill", "orange")
+            .style("stroke", "orange")
+            .style("fill-opacity", 0.3),
+            update => update
+            .transition(d3.transition()
+                .duration(50)
+                .ease(d3.easeLinear)).attr("cx", (d) => x2(d.income))
+            .transition(d3.transition()
+                .duration(50)
+                .ease(d3.easeLinear)).attr("cy", (d) => y2(d.life))
+            .transition(d3.transition()
+                .duration(50)
+                .ease(d3.easeLinear)).attr("r", (d) => scalePop2(d.pop)),
+            exit => exit.remove());
+}
+
+// Event listener
+const btnPlay = document.createElement("button");
+btnPlay.innerHTML = "Play";
+btnPlay.id = "play";
+document.body.appendChild(btnPlay);
+
+const btnStop = document.createElement("button");
+btnStop.innerHTML = "Stop";
+btnStop.id = "stop";
+document.body.appendChild(btnStop);
+
+//document.getElementById("play").addEventListener("click", animate);
+document.getElementById("play").addEventListener("click", () => {
+    animate();
+    //console.log('play');
+});
+//document.getElementById("stop").addEventListener("click", stop);
+document.getElementById("stop").addEventListener("click", () => {
+    stop();
+    //console.log('stop');
+});
