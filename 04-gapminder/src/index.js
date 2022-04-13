@@ -101,7 +101,7 @@ g.selectAll("circle")
     .style("fill-opacity", 0.3);
 
 
-/* 
+
 // Cartographie
 const margin2 = {
         top: 5,
@@ -120,6 +120,7 @@ body.append('svg')
 
 const g2 = d3.select(".group2");
 
+
 // Map and projection
 const path = d3.geoPath();
 const projection = d3.geoMercator()
@@ -134,11 +135,11 @@ const colorScale = d3.scaleThreshold()
     .range(d3.schemeOranges[5]);
 
 // Load external data and boot
-d3.queue()
-    .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-    .await(ready);
+Promise.all([
+    d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
+]).then(function (loadData) {
 
-function ready(error, topo) {
+    let topo = loadData[0]
 
     let mouseOver = function (d) {
         d3.selectAll(".Country")
@@ -192,7 +193,7 @@ function ready(error, topo) {
         .style("opacity", .8)
         .on("mouseover", mouseOver)
         .on("mouseleave", mouseLeave)
-} */
+})
 
 
 //Animation
@@ -240,22 +241,6 @@ g3.append('text')
 
 
 //Données
-/* const annee2021 = allData.filter(allData => allData.annee == 2021)
-console.log(annee2021[0].data);
-
-g3.selectAll("circle")
-    .data(annee2021[0].data)
-    .enter()
-    .append("circle")
-    .attr("class", (d) => d.country)
-    .attr("cx", (d) => x(d.income))
-    .attr("cy", (d) => y(d.life))
-    .attr("r", (d) => scalePop(d.pop))
-    .style("fill", "orange")
-    .style("stroke", "orange")
-    .style("fill-opacity", 0.3); */
-
-//Variable où on stocke l'id de notre intervalle
 let nIntervId;
 
 function animate() {
@@ -322,13 +307,5 @@ btnStop.innerHTML = "Stop";
 btnStop.id = "stop";
 document.body.appendChild(btnStop);
 
-//document.getElementById("play").addEventListener("click", animate);
-document.getElementById("play").addEventListener("click", () => {
-    animate();
-    //console.log('play');
-});
-//document.getElementById("stop").addEventListener("click", stop);
-document.getElementById("stop").addEventListener("click", () => {
-    stop();
-    //console.log('stop');
-});
+document.getElementById("play").addEventListener("click", animate);
+document.getElementById("stop").addEventListener("click", stop);
