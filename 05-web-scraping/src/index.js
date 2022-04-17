@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import * as d3 from 'd3';
 import puppeteer from 'puppeteer';
 
@@ -11,3 +12,6 @@ import puppeteer from 'puppeteer';
 
     await browser.close();
 })();
+=======
+import * as puppeteer from "puppeteer";
+>>>>>>> d94735becdc88ec3a995e077f2c8b40b2c77c556
